@@ -3,6 +3,7 @@ package io.github.leoallvez.forum.controller
 import io.github.leoallvez.forum.dto.NewTopicForm
 import io.github.leoallvez.forum.dto.TopicView
 import io.github.leoallvez.forum.service.TopicService
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,7 +26,7 @@ class TopicController(private val service: TopicService) {
     }
 
     @PostMapping
-    fun create(@RequestBody form: NewTopicForm): TopicView {
+    fun create(@RequestBody @Valid form: NewTopicForm): TopicView {
         return service.create(form)
     }
 }
