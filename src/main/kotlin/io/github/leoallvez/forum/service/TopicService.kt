@@ -1,54 +1,32 @@
 package io.github.leoallvez.forum.service
 
-import io.github.leoallvez.forum.model.Course
+import io.github.leoallvez.forum.dto.NewTopicForm
+import io.github.leoallvez.forum.dto.TopicView
+import io.github.leoallvez.forum.mapper.TopicFormMapper
+import io.github.leoallvez.forum.mapper.TopicViewMapper
 import io.github.leoallvez.forum.model.Topic
-import io.github.leoallvez.forum.model.User
 import org.springframework.stereotype.Service
 
 @Service
-class TopicService(private var topics: List<Topic>) {
+class TopicService(
+    private var topics: List<Topic> = listOf(),
+    private val topicViewMapper: TopicViewMapper,
+    private val topicFormMapper: TopicFormMapper
+) {
 
-    init {
-        val course = Course(
-            id = 1,
-            name = "Kotlin",
-            category = "Programming"
-        )
-        val user = User(
-            id = 1,
-            name = "Leo",
-            email = "leoallvez@gmail.com"
-        )
-        val topic1 = Topic(
-            id = 1,
-            title = "Kotlin doubts 1",
-            message = "Kotlin Variables 1",
-            course = course,
-            author = user
-        )
-        val topic2 = Topic(
-            id = 2,
-            title = "Kotlin doubts 2",
-            message = "Kotlin Variables 2",
-            course = course,
-            author = user
-        )
-        val topic3 = Topic(
-            id = 3,
-            title = "Kotlin doubts 3",
-            message = "Kotlin Variables 3",
-            course = course,
-            author = user
-        )
-        topics = listOf(topic1, topic2, topic3)
+    fun list(): List<TopicView> {
+        return topics.map { topic -> topicViewMapper.map(topic) }
     }
 
-    fun list(): List<Topic> {
-        return topics
+    fun findById(id: Long): TopicView {
+        val topic = topics.stream().filter { topic -> topic.id == id }.findFirst().get()
+        return topicViewMapper.map(topic)
     }
 
-    fun findById(id: Long): Topic {
-        return topics.stream().filter { t -> t.id == id }.findFirst().get()
+    fun create(form: NewTopicForm): TopicView {
+        val topic = topicFormMapper.map(form)
+        topic.id = topics.size.toLong() + 1
+        topics = topics.plus(topic)
+        return topicViewMapper.map(topic)
     }
-
 }
