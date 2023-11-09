@@ -5,6 +5,7 @@ import io.github.leoallvez.forum.dto.TopicView
 import io.github.leoallvez.forum.dto.UpdateTopicForm
 import io.github.leoallvez.forum.service.TopicService
 import jakarta.validation.Valid
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,5 +36,10 @@ class TopicController(private val service: TopicService) {
     @PutMapping
     fun update(@RequestBody @Valid form: UpdateTopicForm): TopicView {
         return service.update(form)
+    }
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: Long) {
+        return service.delete(id)
     }
 }
