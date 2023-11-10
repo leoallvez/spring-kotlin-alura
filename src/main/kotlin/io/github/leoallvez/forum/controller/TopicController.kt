@@ -5,14 +5,10 @@ import io.github.leoallvez.forum.dto.TopicView
 import io.github.leoallvez.forum.dto.UpdateTopicForm
 import io.github.leoallvez.forum.service.TopicService
 import jakarta.validation.Valid
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
 @RequestMapping("/topics")
@@ -29,16 +25,23 @@ class TopicController(private val service: TopicService) {
     }
 
     @PostMapping
-    fun create(@RequestBody @Valid form: NewTopicForm): TopicView {
-        return service.create(form)
+    fun create(
+        @RequestBody @Valid form: NewTopicForm,
+        uriComponentsBuilder: UriComponentsBuilder
+    ): ResponseEntity<TopicView> {
+        val topicView = service.create(form)
+        val uri = uriComponentsBuilder.path("/topics/${topicView.id}").build().toUri()
+        return ResponseEntity.created(uri).body(topicView)
     }
 
     @PutMapping
-    fun update(@RequestBody @Valid form: UpdateTopicForm): TopicView {
-        return service.update(form)
+    fun update(@RequestBody @Valid form: UpdateTopicForm): ResponseEntity<TopicView> {
+        val topicView = service.update(form)
+        return ResponseEntity.ok(topicView)
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     fun delete(@PathVariable id: Long) {
         return service.delete(id)
     }
