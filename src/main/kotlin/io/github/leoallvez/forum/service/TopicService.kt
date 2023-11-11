@@ -3,6 +3,7 @@ package io.github.leoallvez.forum.service
 import io.github.leoallvez.forum.dto.NewTopicForm
 import io.github.leoallvez.forum.dto.TopicView
 import io.github.leoallvez.forum.dto.UpdateTopicForm
+import io.github.leoallvez.forum.exception.NotFoundException
 import io.github.leoallvez.forum.mapper.TopicFormMapper
 import io.github.leoallvez.forum.mapper.TopicViewMapper
 import io.github.leoallvez.forum.model.Topic
@@ -44,7 +45,11 @@ class TopicService(
     }
 
     private fun findTopicById(id: Long): Topic {
-        return topics.stream().filter { topic -> topic.id == id }.findFirst().get()
+        return topics
+            .stream()
+            .filter { topic -> topic.id == id }
+            .findFirst()
+            .orElseThrow { NotFoundException() }
     }
 
 }
